@@ -1,12 +1,13 @@
-{% macro menu(config, current_path) %}
+{% component menu.menu(config, current_path, current_url) %}
     {%- set current_item = false -%}
+    {%- set base_item = false -%}
     {%- if config.extra.menu_items %}
         {%- set menu_items = config.extra.menu_items -%}
 
             {%- for item in menu_items %}
                 {%- set abs_item_url = item.url | replace(from="$BASE_URL", to=config.base_url) -%}
                 {%- set is_current = current_url == abs_item_url ~ "/"
-                                     or current_url is starting_with(abs_item_url)
+                                     or current_url is starting_with(pat=abs_item_url)
                 -%}
                 {%- set is_base = abs_item_url == config.base_url
                                   or abs_item_url == config.base_url ~ "/"
@@ -18,7 +19,7 @@
 
                 {%- if is_current and not is_base %}
                     {%- set_global current_item = item -%}
-                {% endif -%}
+                {% endif %}
             {% endfor -%}
 
             {%- if not current_item and base_item %}
@@ -26,11 +27,11 @@
                 {%- set current_item = base_item -%}
             {% endif -%}
 
-            {{ menu_macros::menu_for(config=config, current_item=current_item) }}
+            {{ <menu.menu_for config={config} current_item={current_item} /> }}
     {% endif -%}
-{% endmacro menu %}
+{% endcomponent menu.menu %}
 
-{% macro menu_for(config, current_item) %}
+{% component menu.menu_for(config, current_item) %}
     {%- if config.extra.menu_items %}
         {%- set menu_items = config.extra.menu_items -%}
 
@@ -48,5 +49,4 @@
             </ul>
         </nav>
     {% endif -%}
-{% endmacro menu %}
-
+{% endcomponent menu.menu_for %}
